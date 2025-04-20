@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cyberity SDK Wrapper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Permissions-Policy" content="camera=*, microphone=*"/>
+    <style>
+    </style>
+    <script src="https://static.cyberity.ru/idensic/static/sns-websdk-builder.js"></script>
+  </head>
+  <body>
+    <div id="cyberity-websdk-container"></div>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      const applicantEmail = urlParams.get("email");
+      const applicantPhone = urlParams.get("phone");
+      const customI18nMessages = urlParams.get("i18n");
+
+      /**
+     * @param accessToken - access token that you generated on the backend in Step 2
+     * @param applicantEmail - applicant email (not required)
+     * @param applicantPhone - applicant phone, if available (not required)
+     * @param customI18nMessages - customized locale messages for current session (not required)
+     */
+      function launchWebSdk(accessToken, applicantEmail, applicantPhone, customI18nMessages) {
+          let cbrWebSdkInstance = snsWebSdk.init(
+                  accessToken,
+                  // token update callback, must return Promise
+                  // Access token expired
+                  // get a new one and pass it to the callback to re-initiate the WebSDK
+                  () => this.getNewAccessToken()
+              )
+              .withBaseUrl("https://api.cyberity.ru")
+              .withConf({ // Optional parameters:
+                  lang: 'en', //language of WebSDK texts and comments (ISO 639-1 format)
+                  email: applicantEmail,
+                  phone: applicantPhone,
+                  i18n: customI18nMessages, //JSON of custom SDK Translations
+                  uiConf: {
+                      customCss: "https://url.com/styles.css"
+                      // URL to css file in case you need change it dynamically from the code
+                      // the similar setting at Customizations tab will rewrite customCss
+                      // you may also use to pass string with plain styles `customCssStr:`
+                  },
+              })
+              .withOptions({
+                  addViewportTag: true, // Adds viewport meta tag for iFrame for mobile-optimized SDK adjustments.
+                  adaptIframeHeight: true // Allows our SDK to adapt its height depending on frame/container/page/screen size.
+              })
+              // see below what kind of messages WebSDK generates
+              .on('idCheck.stepCompleted', (payload) => {
+                  console.log("Ошибка SDK:", error);
+                  const err = document.createElement("div");
+                  err.innerText = "Ошибка: " + JSON.stringify(error);
+                  document.body.appendChild(err);
+              })
+              .on('idCheck.onError', (error) => {
+                  console.log('onError', error)
+              })
+              .onMessage((type, payload) => {
+                  console.log('onMessage', type, payload)
+              })
+              .build();
+
+          // you are ready to go:
+          // just launch the WebSDK by providing the container element for it
+          cbrWebSdkInstance.launch('#cyberity-websdk-container')
+      }
+
+      function getNewAccessToken() {
+          return Promise.resolve(newAccessToken)// get a new token from your backend
+      }
+
+      if (token) {
+        launchWebSdk(token, applicantEmail, applicantPhone, customI18nMessages);
+      } else {
+        document.body.innerHTML = "<h2>❌ Не передан token в URL (?token=...)</h2>";
+      }
+    </script>
+  </body>
+</html>
