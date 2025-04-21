@@ -50,17 +50,97 @@
                   adaptIframeHeight: true // Allows our SDK to adapt its height depending on frame/container/page/screen size.
               })
               // see below what kind of messages WebSDK generates
+              .on('idCheck.onReady', () => {
+                  console.log('WebSDK ready');
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'ready'
+                  }));
+              })
+              .on('idCheck.onInitialized', () => {
+                  console.log('WebSDK initialized');
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'initialized'
+                  }));
+              })
+              .on('idCheck.onStepInitiated', (payload) => {
+                  console.log('Step initiated', payload);
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'stepInitiated',
+                    payload
+                  }));
+              })
               .on('idCheck.stepCompleted', (payload) => {
-                  console.log("Ошибка SDK:", error);
-                  const err = document.createElement("div");
-                  err.innerText = "Ошибка: " + JSON.stringify(error);
-                  document.body.appendChild(err);
+                  console.log('stepCompleted', payload)
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'stepCompleted',
+                    payload
+                  }));
+              })
+              .on('idCheck.onApplicantLoaded', (payload) => {
+                  console.log('Applicant loaded', payload);
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'applicantLoaded',
+                    payload
+                  }));
+              })
+              .on('idCheck.onApplicantSubmitted', () => {
+                  console.log('Applicant submitted');
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'applicantSubmitted'
+                  }));
+              })
+              .on('idCheck.onApplicantStatusChanged', (payload) => {
+                  console.log('Applicant status changed', payload);
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'applicantStatusChanged',
+                    payload
+                  }));
+              })
+              .on('idCheck.onApplicantResubmitted', () => {
+                  console.log('Applicant resubmitted');
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'applicantResubmitted'
+                  }));
+              })
+              .on('idCheck.onResize', (payload) => {
+                  console.log('Resize', payload);
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'resize',
+                    payload
+                  }));
+              })
+              .on('idCheck.onUploadError', (payload) => {
+                  console.log('Upload error', payload);
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'uploadError',
+                    payload
+                  }));
+              })
+              .on('idCheck.onUploadWarning', (payload) => {
+                  console.log('Upload warning', payload);
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'uploadWarning',
+                    payload
+                  }));
               })
               .on('idCheck.onError', (error) => {
                   console.log('onError', error)
+                  const div = document.createElement('div');
+                  div.innerText = 'Ошибка камеры: ' + JSON.stringify(error);
+                  document.body.appendChild(div);
+
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'error',
+                    payload: error
+                  }));
               })
               .onMessage((type, payload) => {
                   console.log('onMessage', type, payload)
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'message',
+                    messageType: type,
+                    payload
+                  }));
               })
               .build();
 
