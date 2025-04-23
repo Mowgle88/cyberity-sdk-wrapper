@@ -14,17 +14,19 @@
     <script>
       const urlParams = new URLSearchParams(window.location.search);
       const token = urlParams.get("token");
+      const lang = urlParams.get("lang");
       const applicantEmail = urlParams.get("email");
       const applicantPhone = urlParams.get("phone");
       const customI18nMessages = urlParams.get("i18n");
 
       /**
      * @param accessToken - access token that you generated on the backend in Step 2
+     * @param lang - language of WebSDK texts and comments (ISO 639-1 format)
      * @param applicantEmail - applicant email (not required)
      * @param applicantPhone - applicant phone, if available (not required)
      * @param customI18nMessages - customized locale messages for current session (not required)
      */
-      function launchWebSdk(accessToken, applicantEmail, applicantPhone, customI18nMessages) {
+      function launchWebSdk(accessToken, lang, applicantEmail, applicantPhone, customI18nMessages) {
           let cbrWebSdkInstance = snsWebSdk.init(
                   accessToken,
                   // token update callback, must return Promise
@@ -34,7 +36,7 @@
               )
               .withBaseUrl("https://api.cyberity.ru")
               .withConf({ // Optional parameters:
-                  lang: 'en', //language of WebSDK texts and comments (ISO 639-1 format)
+                  lang: lang || 'ru', //language of WebSDK texts and comments (ISO 639-1 format)
                   email: applicantEmail,
                   phone: applicantPhone,
                   i18n: customI18nMessages, //JSON of custom SDK Translations
@@ -154,7 +156,7 @@
       }
 
       if (token) {
-        launchWebSdk(token, applicantEmail, applicantPhone, customI18nMessages);
+        launchWebSdk(token, lang, applicantEmail, applicantPhone, customI18nMessages);
       } else {
         document.body.innerHTML = "<h2>❌ Не передан token в URL (?token=...)</h2>";
       }
