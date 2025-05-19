@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Permissions-Policy" content="camera=*, microphone=*"/>
     <style>
+      body {
+        background-color: #30283D;
+        margin: 0;
+      }
     </style>
     <script src="https://static.cyberity.ru/idensic/static/sns-websdk-builder.js"></script>
   </head>
@@ -40,12 +44,12 @@
                   email: applicantEmail,
                   phone: applicantPhone,
                   i18n: customI18nMessages, //JSON of custom SDK Translations
-                  // uiConf: {
-                      // customCss: "https://cyberity-custom-css.vercel.app/custom-styles.css"
+                  uiConf: {
+                      customCss: "https://cyberity-custom-css.vercel.app/custom-styles.css"
                       // URL to css file in case you need change it dynamically from the code
                       // the similar setting at Customizations tab will rewrite customCss
                       // you may also use to pass string with plain styles `customCssStr:`
-                  // },
+                  },
               })
               .withOptions({
                   addViewportTag: true, // Adds viewport meta tag for iFrame for mobile-optimized SDK adjustments.
